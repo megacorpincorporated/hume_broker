@@ -12,7 +12,7 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'hume_broker'
+NAME = 'hume-broker'
 DESCRIPTION = 'HUME internal broker.'
 URL = 'https://github.com/megacorpincorporated/hume_broker'
 EMAIL = 'thornvik.mans@gmail.com'
