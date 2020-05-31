@@ -14,6 +14,20 @@ def start():
     Starts the Broker, initializing the RMQ client. Enables RPC client
     capabilities by default.
     """
+    root_logger = logging.getLogger("hume_broker")
+    root_logger.setLevel(logging.DEBUG)
+
+    handler = logging.StreamHandler()  # Print logging messages
+
+    formatter = logging.Formatter(fmt="{asctime} {levelname:^8} "
+                                      "{module} {message}",
+                                  style="{",
+                                  datefmt="%d/%m/%Y %H:%M:%S")
+    handler.setFormatter(formatter)
+    handler.setLevel(logging.DEBUG)
+
+    root_logger.addHandler(handler)
+
     LOGGER.info("broker start")
 
     _rmq_client.start()
