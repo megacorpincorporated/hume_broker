@@ -5,8 +5,8 @@ from rabbitmq_client.client import RMQClient
 
 LOGGER = logging.getLogger(__name__)
 
-_internal_subscriptions = dict()
-_rmq_client = RMQClient(log_level=logging.INFO)
+_internal_subscriptions: dict
+_rmq_client: RMQClient
 
 
 def start():
@@ -14,6 +14,11 @@ def start():
     Starts the Broker, initializing the RMQ client. Enables RPC client
     capabilities by default.
     """
+    global _internal_subscriptions
+    _internal_subscriptions = dict()
+    global _rmq_client
+    _rmq_client = RMQClient(log_level=logging.INFO)
+
     root_logger = logging.getLogger("hume_broker")
     root_logger.setLevel(logging.DEBUG)
 
