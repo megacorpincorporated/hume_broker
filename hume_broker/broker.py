@@ -9,15 +9,19 @@ _internal_subscriptions: dict
 _rmq_client: RMQClient
 
 
-def start():
+def start(connection_parameters=None):
     """
     Starts the Broker, initializing the RMQ client. Enables RPC client
     capabilities by default.
+
+    :param connection_parameters: RabbitMQ connection parameters
+    :type connection_parameters: pika.ConnectionParameters
     """
     global _internal_subscriptions
     _internal_subscriptions = dict()
     global _rmq_client
-    _rmq_client = RMQClient(log_level=logging.INFO)
+    _rmq_client = RMQClient(log_level=logging.INFO,
+                            connection_parameters=connection_parameters)
 
     root_logger = logging.getLogger("hume_broker")
     root_logger.setLevel(logging.DEBUG)
@@ -144,3 +148,29 @@ def rpc_call(receiver, message):
     LOGGER.info(f"broker rpc_call to {receiver}")
 
     return _rmq_client.rpc_call(receiver, message)
+
+
+def command_queue(queue_name, callback):
+    """
+    Start a command queue, where messages consumed should be sent to callback.
+
+    NOTE! Callback will received bytes!
+
+    :type queue_name: str
+    :type callback: callable
+    """
+    LOGGER.info(f"broker declaring command queue: {queue_name}")
+
+    _rmq_client.command_queue(queue_name, callback)
+
+
+def command(command_queue, command):
+    """
+    Send a command to parameter command queue.
+
+    :type command_queue: str
+    :type command: bytes
+    """
+    LOGGER.info(f"broker command to {command_queue}")
+
+    _rmq_client.command(command_queue, command)
