@@ -9,36 +9,25 @@ _internal_subscriptions: dict
 _rmq_client: RMQClient
 
 
-def start(connection_parameters=None):
+def start(log_queue=None, connection_parameters=None):
     """
     Starts the Broker, initializing the RMQ client. Enables RPC client
     capabilities by default.
 
+    :param log_queue: optional log queue to enable logging of the broker's
+                      dependency rabbitmq-client.
+    :type log_queue: multiprocessing.Queue
     :param connection_parameters: RabbitMQ connection parameters
     :type connection_parameters: pika.ConnectionParameters
     """
-    global _internal_subscriptions
-    _internal_subscriptions = dict()
-    global _rmq_client
-    _rmq_client = RMQClient(log_level=logging.INFO,
-                            connection_parameters=connection_parameters)
-
-    root_logger = logging.getLogger("hume_broker")
-    root_logger.setLevel(logging.DEBUG)
-
-    handler = logging.StreamHandler()  # Print logging messages
-
-    formatter = logging.Formatter(fmt="{asctime} {levelname:^8} "
-                                      "{module} {message}",
-                                  style="{",
-                                  datefmt="%d/%m/%Y %H:%M:%S")
-    handler.setFormatter(formatter)
-    handler.setLevel(logging.DEBUG)
-
-    root_logger.addHandler(handler)
-
     LOGGER.info("broker start")
 
+    global _internal_subscriptions
+    _internal_subscriptions = dict()
+
+    global _rmq_client
+    _rmq_client = RMQClient(log_queue=log_queue,
+                            connection_parameters=connection_parameters)
     _rmq_client.start()
     _rmq_client.enable_rpc_client()
 
